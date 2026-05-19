@@ -68,14 +68,63 @@ CogniSIFT introduces a multi-agent AI system, powered by Gemini 1.5 Pro's reason
 **Purpose:** The core functional workspace demonstrating the multi-agent system in action. Provides real-time visibility into agent reasoning, actions, and findings.
 **Components:** Agent Status HUD (Visualizing active agents, their current task, and confidence scores) · Live Reasoning Log (Streaming text log of agent collaboration, thought processes, hypothesis generation, and self-corrections, color-coded by agent) · Evidence Timeline (Interactive timeline of artifacts, actions taken, and key findings) · Anomaly Detection View (Visualizations of suspicious activity detected by agents) · Action/Recommendation Panel (Validated remediation steps, options for user intervention/approval) · Evidence Integrity Monitor (Real-time display confirming non-destructive operations and audit trail status)
 
+## 🔌 Custom SIFT MCP Server (Forensic Orchestration)
+
+To comply with SANS evidence safety standards, CogniSIFT implements a **zero-dependency Custom Model Context Protocol (MCP) Server** running over Standard I/O (stdio). 
+
+### Key Forensic Safeguards:
+1. **Strict Binary Allowlist:** No arbitrary shell commands. MCP invokes only pre-approved SIFT binaries mapped to strict absolute paths (e.g., `volatility3`, `fls`, `amcache.py`).
+2. **Argument Sanitization Grammar:** Arguments are validated against rigid regexes (e.g., `imagePath` must match `/^\/evidence\/[a-zA-Z0-9_\-\.]+\.(raw|img|dd|E01)$/`) preventing command or argument injection.
+3. **Tamper-Evident Ledger:** Employs an append-only, chained cryptographic hash log for the `chain_of_custody_register` tool. Each entry includes the SHA-256 of the previous entry, establishing a mathematically verifiable audit path.
+4. **No Silent Degradation:** Validates outputs before emission. If standard SIFT tools fail or emit corrupt data, the server fails loudly with an explicit JSON-RPC error `-32603` and a `"status": "tool_output_rejected"` signature, warning the agent instantly.
+
+### Exposed MCP Forensic Tools:
+* `volatility_pslist`: Lists running memory processes (PIDs, PPIDs, paths).
+* `volatility_malfind`: Scans memory pages for injected shellcode.
+* `suspicious_parent_child_analyzer`: Audits memory process trees to highlight masquerading or parentage anomalies.
+* `get_amcache`: Extracts Windows program execution and compile timeline records.
+* `extract_mft_timeline`: Bodyfile parser extracting system creation and write times from `$MFT`.
+* `chain_of_custody_register`: Creates a cryptographically linked custody entry.
+
+---
+
 ## 🚀 Getting Started
 
+### 1. Launch SIFT MCP Server
+The server runs completely offline with zero dependency overhead. 
+
+```bash
+# Standard Live Mode (requires local SIFT binaries installed)
+npm run mcp
+
+# Demo/Simulation Mode (runs realistic scenarios with synthetic tagging)
+npm run mcp:demo
+
+# Replay Mode (replays saved incident streams deterministically)
+npm run mcp:replay
+```
+
+### 2. Client Integration (Cursor / Cline)
+To register the server inside your AI Agent IDE:
+
+**For Cline (`sift_mcp_config.json`):**
+```json
+"mcpServers": {
+  "cognisift-sift-mcp": {
+    "command": "node",
+    "args": ["/absolute/path/to/mcp-server.js", "--demo-mode"]
+  }
+}
+```
+
+### 3. Run the Next.js HUD Dashboard
+Start the Next.js visual HUD dashboard console:
 ```bash
 npm install
-cp .env.example .env
-# Add your API keys to .env
 npm run dev
 ```
+Open [http://localhost:3000](http://localhost:3000) to view the live dashboard. Click any case incident to stream real-time SIFT MCP event telemetry via Server-Sent Events (SSE).
+
 
 ## 🎬 Demo Flow
 

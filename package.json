@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "mcp": "node mcp-server.js",
+    "mcp:demo": "node mcp-server.js --demo-mode",
+    "mcp:replay": "node mcp-server.js --replay",
+    "demo": "next dev"
   },
   "dependencies": {
     "@google/generative-ai": "^0.11.3",
