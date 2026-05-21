@@ -110,7 +110,7 @@ CogniSIFT is engineered using a robust, highly optimized stack:
 ---
 
 ### 🚀 What's next for CogniSIFT
-*   **Live SANS SIFT OVA Environment Integration:** Our immediate next milestone is to deploy the custom MCP server natively inside a SANS SIFT Workstation virtual machine (.ova) to run against live system memory captures and volatile registry trees.
+*   **Automated SIFT VM Provisioning:** Packaging our custom MCP server as a standard, one-click installation package or container configuration. This will allow security teams to instantly provision CogniSIFT natively within their existing SANS SIFT Workstation virtual machines (.ova) with zero manual environment configuration.
 *   **Hardware-Backed Cryptographic Signing:** Integrating the Chain of Custody ledger with a hardware security module (HSM) or TPM chip to physically sign the SHA-256 hashes, preventing any possibility of backend tamper scenarios.
 *   **Collaborative SOC Playbooks:** Expanding the SSE streaming engine to support multi-analyst workspaces, enabling team-based threat hunting and joint cryptographic verification of incident timelines.
 
